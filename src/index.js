@@ -7,27 +7,41 @@ const debounce = require('lodash.debounce');
 const searchForm = document.querySelector('#search-form');
 const divMark = document.querySelector('.mark');
 const apiKey = '20461350-36527ad634bc0878b1b72e118';
-let btn;
+const firstPage = 1;
+let currentNextPage = 1;
+let searchWords;
+
 
 
 searchForm.addEventListener('submit', (event) => {
     event.preventDefault();
     divMark.innerHTML = '';
-    const searchWords = searchForm.elements.query.value;
-    createFirstPage(searchWords);
-
+    searchWords = searchForm.elements.query.value;
+    const title = { searchWords };
+    const galleryMarkup = gallery(title);
+    divMark.insertAdjacentHTML('beforeend', galleryMarkup);
+    const btn = document.querySelector('.btn-load-more');
     
+    btn.addEventListener('click', (event) => {
+        loadMoreFn(event, currentNextPage);
+        
+    });
+
+    createFirstPage(searchWords);
     searchForm.reset();
 });
 
-const createFirstPage = (searchWords) => {
+const createFirstPage = (words) => {
     
-    const title = { searchWords };
-    const firstPage = 1;
-    let resFetch = searchImgFn(searchWords, firstPage, apiKey);
-    const galleryMarkup = gallery(title);
-    divMark.insertAdjacentHTML('beforeend', galleryMarkup);
-    btn = document.querySelector('.btn-load-more');
-    btn.addEventListener('submit', loadMoreFn);
+    searchImgFn(words, firstPage, apiKey);
+    
 }
+
+function loadMoreFn(event, page) { 
+    console.log(`click`, event);
+    searchImgFn(searchWords, page, apiKey);
+    currentNextPage = page + 1;
+    console.log(currentNextPage);
+};
+
 
